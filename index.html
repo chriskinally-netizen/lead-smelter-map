@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lead balance and secondary lead smelters, low- and middle-income countries</title>
+<meta name="description" content="Map of secondary lead smelters in low- and middle-income countries, with lead balances built from trade data, and a link to model a smelter's plume in ULAB Plume.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css?v=90f490ed4f">
+</head>
+<body>
+<p class="site-msg" id="site-load-error" hidden>The data did not load. Reload the page; if it keeps happening, the site may be updating.</p>
+<noscript><p class="site-msg">This map needs JavaScript.</p></noscript>
+<div class="lm">
+  <header id="summary">
+    <h1 class="lm-title">Lead balance and secondary smelters</h1>
+    <p class="lm-sub">Unaccounted lead is the lead in used batteries and scrap that industrial or registered smelters did not take in; here it is assumed to be recycled informally or by unregistered plants. Trade from UN Comtrade (2019–2024); smelters from the smelter catalogue as of 16 Nov 2026. Balances are built for Ghana, India, Nigeria, DR Congo and Ethiopia, with a provisional one for Indonesia; the catalogue's other 11 countries show their smelters, production and trade.</p>
+  </header>
+
+  <div class="lm-layout">
+    <section class="lm-card lm-mapcard" id="map">
+      <div class="lm-toolbar">
+        <div class="lm-seg" role="group" aria-label="What the map shows">
+          <button type="button" data-layer="share" aria-pressed="true">Share unaccounted</button>
+          <button type="button" data-layer="trade" aria-pressed="false">Lead in and out</button>
+        </div>
+        <div class="lm-zoombar">
+          <select class="dash-select" id="map-country" data-countrysel aria-label="Go to a country">
+            <option value="">Go to a country…</option>
+            <option value="ARG">Argentina</option>
+            <option value="BGD">Bangladesh</option>
+            <option value="BRA">Brazil</option>
+            <option value="CHN">China</option>
+            <option value="COD">DR Congo</option>
+            <option value="EGY">Egypt</option>
+            <option value="ETH">Ethiopia</option>
+            <option value="GHA">Ghana</option>
+            <option value="IND">India</option>
+            <option value="IDN">Indonesia</option>
+            <option value="IRN">Iran</option>
+            <option value="MEX">Mexico</option>
+            <option value="NGA">Nigeria</option>
+            <option value="PAK">Pakistan</option>
+            <option value="PHL">Philippines</option>
+            <option value="RUS">Russia</option>
+            <option value="ZAF">South Africa</option>
+          </select>
+          <div class="lm-seg" role="group" aria-label="Zoom">
+            <button type="button" data-zoom="world">World</button>
+            <button type="button" data-zoomby="in" aria-label="Zoom in">+</button>
+            <button type="button" data-zoomby="out" aria-label="Zoom out">−</button>
+          </div>
+        </div>
+      </div>
+      <div class="lm-flowbar" id="map-flowbar" data-layerkey="trade" hidden>
+        <span>Click a catalogue country for its partners:</span>
+        <div class="lm-seg" role="group" aria-label="Which product's flows to draw">
+          <button type="button" data-flowprod="spent" aria-pressed="true">Spent lead-acid batteries</button>
+          <button type="button" data-flowprod="new" aria-pressed="false">New lead-acid batteries</button>
+        </div>
+        <div class="lm-seg" role="group" aria-label="Year of the flows">
+          <button type="button" data-flowyear="2023" aria-pressed="false">2023</button>
+          <button type="button" data-flowyear="2024" aria-pressed="true">2024</button>
+        </div>
+      </div>
+      <div class="lm-map" id="map-canvas" data-draw="map" data-source="world balance leadtrade smelters flows"></div>
+      <div class="lm-filters" id="map-filters" role="group" aria-label="Smelters shown on the map">
+        <span>Smelters on the map:</span>
+        <div class="lm-seg" role="group" aria-label="Which smelters the map shows">
+          <button type="button" data-maplist="confirmed" aria-pressed="false">Confirmed</button>
+          <button type="button" data-maplist="probable_plus" aria-pressed="true">Confirmed and probable</button>
+          <button type="button" data-maplist="closed" aria-pressed="false">Closed</button>
+          <button type="button" data-maplist="all" aria-pressed="false">All</button>
+        </div>
+      </div>
+      <div class="lm-legend" id="map-legend">
+        <span class="lm-li" data-layerkey="share"><span class="lm-sw" data-draw="sw" data-kind="share"></span>Share of lead unaccounted, 0% to 50% or more</span>
+        <span class="lm-li" data-layerkey="share"><span class="lm-sw" data-draw="sw" data-kind="gap"></span>More lead goes out than recorded supply holds</span>
+        <span class="lm-li" data-layerkey="trade" hidden><span class="lm-sw" data-draw="sw" data-kind="trade"></span>Lead in (left) and out (right), latest reported year, area by tonnes of lead</span>
+        <span class="lm-li" data-layerkey="trade" hidden><span class="lm-sw" data-draw="sw" data-kind="flowin"></span>Imports into the chosen country</span>
+        <span class="lm-li" data-layerkey="trade" hidden><span class="lm-sw" data-draw="sw" data-kind="flowout"></span>Its exports</span>
+        <span class="lm-li" data-layerkey="trade" hidden><span class="lm-sw" data-draw="sw" data-kind="flowdash"></span>From the partner's report (solid: the country's own); line width by tonnes</span>
+        <span class="lm-li"><span class="lm-sw" data-draw="sw" data-kind="cat"></span>In the catalogue, no lead balance yet</span>
+        <span class="lm-li"><span class="lm-sw" data-draw="sw" data-kind="A"></span>Confirmed (A–B)</span>
+        <span class="lm-li"><span class="lm-sw" data-draw="sw" data-kind="C"></span>Probably active (C)</span>
+        <span class="lm-li"><span class="lm-sw" data-draw="sw" data-kind="D"></span>Listed, stale or planned (D, P)</span>
+        <span class="lm-li"><span class="lm-sw" data-draw="sw" data-kind="X"></span>Closed or raided (X)</span>
+        <span class="lm-li"><span class="lm-sw" data-draw="sw" data-kind="cap25"></span>25,000</span>
+        <span class="lm-li"><span class="lm-sw" data-draw="sw" data-kind="cap100"></span>100,000</span>
+        <span class="lm-li"><span class="lm-sw" data-draw="sw" data-kind="cap250"></span>250,000 t/yr of lead capacity or more</span>
+      </div>
+      <div class="lm-partners" id="map-partners" data-flowbox data-source="flows" hidden>
+        <h3><span data-draw="ftitle">—</span></h3>
+        <p class="lm-note">Imports from <b data-draw="ftot" data-dir="Imports" data-f="partners">—</b> partners, <b data-draw="ftot" data-dir="Imports" data-f="tonnes">—</b> t in all; exports to <b data-draw="ftot" data-dir="Exports" data-f="partners">—</b> partners, <b data-draw="ftot" data-dir="Exports" data-f="tonnes">—</b> t. Each flow is the country's own report where it gave one, otherwise its partner's, so a total can differ a little from the country's own figure in the panel.</p>
+        <div class="lm-ptables">
+          <div class="lm-table-wrap"><table class="lm-table" id="flows-in" data-source="flows" data-row-key="key">
+            <thead><tr><th data-field="partner">Imports from</th><th class="num" data-field="tonnes">Tonnes</th><th class="num" data-field="share_pct">Share, %</th></tr></thead>
+            <tbody data-draw="flist" data-dir="Imports"></tbody>
+          </table></div>
+          <div class="lm-table-wrap"><table class="lm-table" id="flows-out" data-source="flows" data-row-key="key">
+            <thead><tr><th data-field="partner">Exports to</th><th class="num" data-field="tonnes">Tonnes</th><th class="num" data-field="share_pct">Share, %</th></tr></thead>
+            <tbody data-draw="flist" data-dir="Exports"></tbody>
+          </table></div>
+        </div>
+        <p class="lm-note">The 10 largest partners each way; the map draws up to 40 of a tonne or more. From UNCTAD's Global Battery Trade Monitor (UN Comtrade; UNCTAD calculations; 2024 provisional).</p>
+      </div>
+      <p class="lm-hint">Drag to move; zoom with + and −, a double-click, or Ctrl or ⌘ with the scroll wheel. Click a catalogue country for its figures, or a factory for a smelter's details<span class="lm-wide"> in the panel beside the map</span><span class="lm-narrow"> below the map</span>. All adds listed, stale and planned sites to the others. A number on a factory counts smelters too close together to draw apart: click it to zoom in. Plants without coordinates are listed in the panel but not drawn.</p>
+    </section>
+
+    <aside class="lm-panel" id="panel">
+      <div data-panel="intro" id="panel-intro">
+        <h2>Choose a country</h2>
+        <p class="lm-note">Click a shaded or hatched country on the map, or choose one here, to see its secondary lead production, its smelters and the lead left unaccounted for. Click a factory on the map for one smelter's details.</p>
+        <div class="lm-picks">
+          <button type="button" class="lm-pick" data-pick="GHA">
+            <span class="lm-pick-name">Ghana</span>
+            <span class="lm-pick-fig"><b data-draw="v" data-source="trade" data-field="kt" data-where="key=GHA-7801-Exports-2024" data-fmt="kt">—</b> kt of refined lead exported, 2024</span>
+            <span class="lm-pick-sub" data-case="GHA-2024:gap">None unaccounted: smelters need more lead than recorded supply</span>
+            <span class="lm-pick-sub" data-case="GHA-2024:unaccounted" hidden><b data-draw="v" data-source="balance" data-field="share_pct" data-where="key=GHA-2024">—</b>% of the lead available unaccounted</span>
+          </button>
+          <button type="button" class="lm-pick" data-pick="IND">
+            <span class="lm-pick-name">India</span>
+            <span class="lm-pick-fig"><b data-draw="v" data-source="inputs" data-field="central_kt" data-where="id=ind_recycled_output_fy2025" data-fmt="kt">—</b> kt of secondary lead, FY2024–25</span>
+            <span class="lm-pick-sub" data-case="IND-2024:unaccounted"><b data-draw="v" data-source="balance" data-field="unaccounted_kt" data-where="key=IND-2024" data-fmt="kt">—</b> kt unaccounted, <b data-draw="v" data-source="balance" data-field="share_pct" data-where="key=IND-2024">—</b>% of the lead available</span>
+            <span class="lm-pick-sub" data-case="IND-2024:gap" hidden>None unaccounted</span>
+          </button>
+          <button type="button" class="lm-pick" data-pick="NGA">
+            <span class="lm-pick-name">Nigeria</span>
+            <span class="lm-pick-fig"><b data-draw="v" data-source="trade" data-field="kt" data-where="key=NGA-7801-Exports-2024" data-fmt="kt">—</b> kt of refined lead exported, 2024</span>
+            <span class="lm-pick-sub" data-case="NGA-2024:gap">None unaccounted: <b data-draw="v" data-source="balance" data-field="over_ratio" data-where="key=NGA-2024">—</b> times as much lead goes out as recorded supply holds</span>
+            <span class="lm-pick-sub" data-case="NGA-2024:unaccounted" hidden><b data-draw="v" data-source="balance" data-field="share_pct" data-where="key=NGA-2024">—</b>% of the lead available unaccounted</span>
+          </button>
+          <button type="button" class="lm-pick" data-pick="COD">
+            <span class="lm-pick-name">DR Congo</span>
+            <span class="lm-pick-fig"><b data-draw="v" data-source="trade" data-field="kt" data-where="key=COD-spent-Exports-2024" data-fmt="kt">—</b> kt of used batteries exported, 2024</span>
+            <span class="lm-pick-sub" data-case="COD-2024:gap">None unaccounted: more lead goes out than recorded supply holds</span>
+            <span class="lm-pick-sub" data-case="COD-2024:unaccounted" hidden><b data-draw="v" data-source="balance" data-field="share_pct" data-where="key=COD-2024">—</b>% of the lead available unaccounted</span>
+          </button>
+          <button type="button" class="lm-pick" data-pick="ETH">
+            <span class="lm-pick-name">Ethiopia</span>
+            <span class="lm-pick-fig"><b data-draw="v" data-source="balance" data-field="unaccounted_kt" data-where="key=ETH-2023" data-fmt="kt">—</b> kt of lead in used batteries unaccounted, 2023</span>
+            <span class="lm-pick-sub" data-case="ETH-2023:unaccounted"><b data-draw="v" data-source="balance" data-field="share_pct" data-where="key=ETH-2023">—</b>% of the lead left for recycling at home</span>
+            <span class="lm-pick-sub" data-case="ETH-2023:gap" hidden>None unaccounted</span>
+          </button>
+          <button type="button" class="lm-pick" data-pick="IDN">
+            <span class="lm-pick-name">Indonesia (provisional)</span>
+            <span class="lm-pick-fig"><b data-draw="v" data-source="balance" data-field="unaccounted_kt" data-where="key=IDN-2024" data-fmt="kt">—</b> kt of lead in used batteries unaccounted, 2024</span>
+            <span class="lm-pick-sub" data-case="IDN-2024:unaccounted"><b data-draw="v" data-source="balance" data-field="share_pct" data-where="key=IDN-2024">—</b>% of the lead left for recycling at home</span>
+            <span class="lm-pick-sub" data-case="IDN-2024:gap" hidden>None unaccounted</span>
+          </button>
+        </div>
+        <h3 class="lm-sec" id="panel-others">Other catalogue countries</h3>
+        <p class="lm-note">Smelters, production and trade; their lead balances are not built yet.</p>
+        <div class="lm-chips">
+          <button type="button" class="lm-btn" data-pick="ARG">Argentina</button>
+          <button type="button" class="lm-btn" data-pick="BGD">Bangladesh</button>
+          <button type="button" class="lm-btn" data-pick="BRA">Brazil</button>
+          <button type="button" class="lm-btn" data-pick="CHN">China</button>
+          <button type="button" class="lm-btn" data-pick="EGY">Egypt</button>
+          <button type="button" class="lm-btn" data-pick="IRN">Iran</button>
+          <button type="button" class="lm-btn" data-pick="MEX">Mexico</button>
+          <button type="button" class="lm-btn" data-pick="PAK">Pakistan</button>
+          <button type="button" class="lm-btn" data-pick="PHL">Philippines</button>
+          <button type="button" class="lm-btn" data-pick="RUS">Russia</button>
+          <button type="button" class="lm-btn" data-pick="ZAF">South Africa</button>
+        </div>
+      </div>
+
+      <div data-panel="country" id="panel-country" hidden>
+        <div data-for="GHA" id="ghana" hidden>
+          <div class="lm-ph">
+            <div>
+              <h2 id="ghana-title">Ghana</h2>
+              <p class="lm-note">Smelter output is measured by refined lead exports.</p>
+            </div>
+            <button type="button" class="lm-btn" data-clear aria-label="Close Ghana">×</button>
+          </div>
+
+          <section class="lm-sec" id="ghana-production">
+            <h3>Secondary lead production, 2024</h3>
+            <p class="lm-big"><span data-draw="v" data-source="trade" data-field="kt" data-where="key=GHA-7801-Exports-2024" data-fmt="kt">—</span> kt</p>
+            <p class="lm-note">Refined lead exported (UN Comtrade). Ghana publishes no production figure, and the balance assumes its smelters export nearly all they make. In 2023: <span data-draw="v" data-source="trade" data-field="kt" data-where="key=GHA-7801-Exports-2023" data-fmt="kt">—</span> kt.</p>
+          </section>
+
+          <section class="lm-sec" id="ghana-smelters">
+            <h3>Smelters</h3>
+            <div class="lm-seg" role="group" aria-label="Which Ghana smelters to list">
+              <button type="button" data-list="confirmed" aria-pressed="false">Confirmed</button>
+              <button type="button" data-list="probable_plus" aria-pressed="true">Confirmed and probable</button>
+              <button type="button" data-list="closed" aria-pressed="false">Closed</button>
+              <button type="button" data-list="all" aria-pressed="false">All</button>
+            </div>
+            <p class="lm-count" data-listcount="confirmed" hidden><span>Smelters <b data-draw="v" data-source="catalogue" data-field="smelters" data-where="key=GHA-confirmed">—</b></span><span>Lead capacity <b data-draw="v" data-source="catalogue" data-field="capacity_tpy" data-where="key=GHA-confirmed" data-fmt="t">—</b> t/yr</span><span>Capacity known for <b data-draw="v" data-source="catalogue" data-field="with_capacity" data-where="key=GHA-confirmed">—</b></span></p>
+            <p class="lm-count" data-listcount="probable_plus"><span>Smelters <b data-draw="v" data-source="catalogue" data-field="smelters" data-where="key=GHA-probable_plus">—</b></span><span>Lead capacity <b data-draw="v" data-source="catalogue" data-field="capacity_tpy" data-where="key=GHA-probable_plus" data-fmt="t">—</b> t/yr</span><span>Capacity known for <b data-draw="v" data-source="catalogue" data-field="with_capacity" data-where="key=GHA-probable_plus">—</b></span></p>
+            <p class="lm-count" data-listcount="closed" hidden><span>Smelters <b data-draw="v" data-source="catalogue" data-field="smelters" data-where="key=GHA-closed">—</b></span><span>Lead capacity <b data-draw="v" data-source="catalogue" data-field="capacity_tpy" data-where="key=GHA-closed" data-fmt="t">—</b> t/yr</span><span>Capacity known for <b data-draw="v" data-source="catalogue" data-field="with_capacity" data-where="key=GHA-closed">—</b></span></p>
+            <p class="lm-count" data-listcount="all" hidden><span>Smelters <b data-draw="v" data-source="catalogue" data-field="smelters" data-where="key=GHA-all">—</b></span><span>Lead capacity <b data-draw="v" data-source="catalogue" data-field="capacity_tpy" data-where="key=GHA-all" data-fmt="t">—</b> t/yr</span><span>Capacity known for <b data-draw="v" data-source="catalogue" data-field="with_capacity" data-where="key=GHA-all">—</b></span></p>
+            <div class="lm-table-wrap"><table class="lm-table lm-list" id="ghana-smelter-list" data-source="smelters" data-row-key="id">
+              <thead><tr><th data-field="facility">Smelter</th><th data-field="grade">Status</th><th class="num">Lead capacity, t/yr</th><th class="num">Reported output, t</th></tr></thead>
+              <tbody data-draw="plist" data-iso="GHA"></tbody>
+            </table></div>
+            <p class="lm-note">Choose a smelter for its details. Lead capacity is the most a plant could make in a year; few plants report what they actually make.</p>
+          </section>
+
+          <section class="lm-sec" id="ghana-unaccounted">
+            <h3>Lead unaccounted for, 2024</h3>
+            <div data-case="GHA-2024:gap">
+              <p class="lm-big">None</p>
+              <p>Exporting <b data-draw="v" data-source="balance" data-field="smelter_output_kt" data-where="key=GHA-2024" data-fmt="kt">—</b> kt of lead takes about <b data-draw="v" data-source="balance" data-field="intake_kt" data-where="key=GHA-2024" data-fmt="kt">—</b> kt fed to smelters, against <b data-draw="v" data-source="balance" data-field="supply_kt" data-where="key=GHA-2024" data-fmt="kt">—</b> kt from recorded sources: <b data-draw="v" data-source="balance" data-field="excess_pct" data-where="key=GHA-2024">—</b>% more (range <span data-draw="v" data-source="balance" data-field="excess_low_pct" data-where="key=GHA-2024">—</span>–<span data-draw="v" data-source="balance" data-field="excess_high_pct" data-where="key=GHA-2024">—</span>%). The smelters' other <b data-draw="v" data-source="balance" data-field="unrecorded_kt" data-where="key=GHA-2024" data-fmt="kt">—</b> kt of feed is missing from the records.</p>
+            </div>
+            <div data-case="GHA-2024:unaccounted" hidden>
+              <p class="lm-big"><span data-draw="v" data-source="balance" data-field="unaccounted_kt" data-where="key=GHA-2024" data-fmt="kt">—</span> kt</p>
+              <p><span data-draw="v" data-source="balance" data-field="share_pct" data-where="key=GHA-2024">—</span>% of the lead available for recycling (range <span data-draw="v" data-source="balance" data-field="share_low_pct" data-where="key=GHA-2024">—</span>–<span data-draw="v" data-source="balance" data-field="share_high_pct" data-where="key=GHA-2024">—</span>%).</p>
+            </div>
+            <div class="lm-chart" id="ghana-chart" data-draw="bal" data-bal="GHA-2024" data-source="balance"></div>
+            <p class="lm-note" data-case="GHA-2023:gap">In 2023 the shortfall was smaller: smelters needed about <b data-draw="v" data-source="balance" data-field="excess_pct" data-where="key=GHA-2023">—</b>% more lead than recorded sources supplied (range <span data-draw="v" data-source="balance" data-field="excess_low_pct" data-where="key=GHA-2023">—</span>–<span data-draw="v" data-source="balance" data-field="excess_high_pct" data-where="key=GHA-2023">—</span>%).</p>
+            <p class="lm-note" data-case="GHA-2023:unaccounted" hidden>In 2023 the balance left <b data-draw="v" data-source="balance" data-field="share_pct" data-where="key=GHA-2023">—</b>% unaccounted.</p>
+          </section>
+
+          <details class="lm-sec lm-more" id="ghana-figures">
+            <summary>Balance and trade figures</summary>
+            <h4>Balance, thousand tonnes of lead</h4>
+            <div class="lm-table-wrap"><table class="lm-table" id="ghana-balance">
+              <thead><tr><th>2024</th><th class="num">Central</th><th class="num">Low</th><th class="num">High</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Lead in Ghana's own used batteries</th><td class="num" data-draw="v" data-source="balance" data-field="own_kt" data-where="key=GHA-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="own_low_kt" data-where="key=GHA-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="own_high_kt" data-where="key=GHA-2024" data-fmt="kt"></td></tr>
+                <tr><th scope="row">Spent batteries imported, net</th><td class="num" data-draw="v" data-source="balance" data-field="spent_kt" data-where="key=GHA-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="spent_low_kt" data-where="key=GHA-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="spent_high_kt" data-where="key=GHA-2024" data-fmt="kt"></td></tr>
+                <tr><th scope="row">Lead scrap imported, net</th><td class="num" data-draw="v" data-source="balance" data-field="scrap_kt" data-where="key=GHA-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="scrap_low_kt" data-where="key=GHA-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="scrap_high_kt" data-where="key=GHA-2024" data-fmt="kt"></td></tr>
+                <tr class="lm-sum"><th scope="row">Available for recycling</th><td class="num" data-draw="v" data-source="balance" data-field="supply_kt" data-where="key=GHA-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="supply_low_kt" data-where="key=GHA-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="supply_high_kt" data-where="key=GHA-2024" data-fmt="kt"></td></tr>
+                <tr><th scope="row">Refined lead exported</th><td class="num" data-draw="v" data-source="balance" data-field="smelter_output_kt" data-where="key=GHA-2024" data-fmt="kt"></td><td></td><td></td></tr>
+                <tr><th scope="row">Fed to smelters (exports ÷ recovery)</th><td class="num" data-draw="v" data-source="balance" data-field="intake_kt" data-where="key=GHA-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="intake_low_kt" data-where="key=GHA-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="intake_high_kt" data-where="key=GHA-2024" data-fmt="kt"></td></tr>
+                <tr class="lm-sum"><th scope="row">Available minus fed to smelters</th><td class="num" data-draw="v" data-source="balance" data-field="unaccounted_kt" data-where="key=GHA-2024" data-fmt="kt"></td><td></td><td></td></tr>
+              </tbody>
+            </table></div>
+            <p class="lm-note">Low and high are the low and high case of each line; the range of the result pairs the lowest supply with the highest intake, and the reverse.</p>
+            <h4>Trade, tonnes</h4>
+            <div class="lm-table-wrap"><table class="lm-table" id="ghana-trade">
+              <thead><tr><th>Product</th><th class="num">Imports 2023</th><th class="num">Imports 2024</th><th class="num">Exports 2023</th><th class="num">Exports 2024</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Refined and unwrought lead (HS 7801)</th><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=GHA-7801-Imports-2023" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=GHA-7801-Imports-2024" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=GHA-7801-Exports-2023" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=GHA-7801-Exports-2024" data-fmt="t" data-link="url"></td></tr>
+                <tr><th scope="row">Spent batteries (HS 8548.10 in 2023, 8549.11 in 2024)</th><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=GHA-spent-Imports-2023" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=GHA-spent-Imports-2024" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=GHA-spent-Exports-2023" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=GHA-spent-Exports-2024" data-fmt="t" data-link="url"></td></tr>
+                <tr><th scope="row">Lead waste and scrap (HS 7802)</th><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=GHA-7802-Imports-2023" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=GHA-7802-Imports-2024" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=GHA-7802-Exports-2023" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=GHA-7802-Exports-2024" data-fmt="t" data-link="url"></td></tr>
+                <tr><th scope="row">New lead-acid batteries (HS 8507.10, 8507.20)</th><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=GHA-8507-Imports-2023" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=GHA-8507-Imports-2024" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=GHA-8507-Exports-2023" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=GHA-8507-Exports-2024" data-fmt="t" data-link="url"></td></tr>
+              </tbody>
+            </table></div>
+            <p class="lm-note">As reported by Ghana; each figure links to its query. Ghana reported spent batteries under the 2017 code in 2023, which covers all battery types. Its spent-battery imports came mostly from Mali and Burkina Faso.</p>
+            <h4>What the balance rests on</h4>
+            <ul class="lm-notes">
+              <li>Lead in Ghana's own used batteries is the lead in new lead-acid batteries Ghana imported two to four years earlier. 2020 is left out because Ghana did not report it; partners' figures for that year are far above Ghana's own for other years. Batteries fitted to imported used vehicles are not counted.</li>
+              <li>Smelter intake is refined lead exports divided by recovery, which assumes Ghana uses almost no refined lead at home; any lead used at home would widen the gap.</li>
+              <li>The shortfall means unrecorded feed. Possible sources: spent batteries brought across land borders without being declared, batteries in imported used vehicles, or lead from other scrap. Côte d'Ivoire, for one, reported spent-battery shipments to Ghana in 2024 that Ghana did not record.</li>
+              <li>Informal breakers who sell plates or crude lead to exporting smelters end up inside the export figure, so the national balance cannot see informal work upstream of the smelters.</li>
+            </ul>
+          </details>
+        </div>
+
+        <div data-for="IND" id="india" hidden>
+          <div class="lm-ph">
+            <div>
+              <h2 id="india-title">India</h2>
+              <p class="lm-note">Smelter intake is measured by the output of CPCB-registered recyclers.</p>
+            </div>
+            <button type="button" class="lm-btn" data-clear aria-label="Close India">×</button>
+          </div>
+
+          <section class="lm-sec" id="india-production">
+            <h3>Secondary lead production, FY2024–25</h3>
+            <p class="lm-big"><span data-draw="v" data-source="inputs" data-field="central_kt" data-where="id=ind_recycled_output_fy2025" data-fmt="kt">—</span> kt</p>
+            <p class="lm-note">Recycled lead produced in India, as estimated by Frost &amp; Sullivan (Ardee Industries prospectus, p. 144). The balance below takes <span data-draw="v" data-source="inputs" data-field="central_pct" data-where="id=ind_registered_share">—</span>% of it as the output of registered recyclers.</p>
+          </section>
+
+          <section class="lm-sec" id="india-smelters">
+            <h3>Smelters</h3>
+            <div class="lm-seg" role="group" aria-label="Which India smelters to list">
+              <button type="button" data-list="confirmed" aria-pressed="false">Confirmed</button>
+              <button type="button" data-list="probable_plus" aria-pressed="true">Confirmed and probable</button>
+              <button type="button" data-list="closed" aria-pressed="false">Closed</button>
+              <button type="button" data-list="all" aria-pressed="false">All</button>
+            </div>
+            <p class="lm-count" data-listcount="confirmed" hidden><span>Smelters <b data-draw="v" data-source="catalogue" data-field="smelters" data-where="key=IND-confirmed">—</b></span><span>Lead capacity <b data-draw="v" data-source="catalogue" data-field="capacity_tpy" data-where="key=IND-confirmed" data-fmt="t">—</b> t/yr</span><span>Capacity known for <b data-draw="v" data-source="catalogue" data-field="with_capacity" data-where="key=IND-confirmed">—</b></span></p>
+            <p class="lm-count" data-listcount="probable_plus"><span>Smelters <b data-draw="v" data-source="catalogue" data-field="smelters" data-where="key=IND-probable_plus">—</b></span><span>Lead capacity <b data-draw="v" data-source="catalogue" data-field="capacity_tpy" data-where="key=IND-probable_plus" data-fmt="t">—</b> t/yr</span><span>Capacity known for <b data-draw="v" data-source="catalogue" data-field="with_capacity" data-where="key=IND-probable_plus">—</b></span></p>
+            <p class="lm-count" data-listcount="closed" hidden><span>Smelters <b data-draw="v" data-source="catalogue" data-field="smelters" data-where="key=IND-closed">—</b></span><span>Lead capacity <b data-draw="v" data-source="catalogue" data-field="capacity_tpy" data-where="key=IND-closed" data-fmt="t">—</b> t/yr</span><span>Capacity known for <b data-draw="v" data-source="catalogue" data-field="with_capacity" data-where="key=IND-closed">—</b></span></p>
+            <p class="lm-count" data-listcount="all" hidden><span>Smelters <b data-draw="v" data-source="catalogue" data-field="smelters" data-where="key=IND-all">—</b></span><span>Lead capacity <b data-draw="v" data-source="catalogue" data-field="capacity_tpy" data-where="key=IND-all" data-fmt="t">—</b> t/yr</span><span>Capacity known for <b data-draw="v" data-source="catalogue" data-field="with_capacity" data-where="key=IND-all">—</b></span></p>
+            <div class="lm-table-wrap"><table class="lm-table lm-list" id="india-smelter-list" data-source="smelters" data-row-key="id">
+              <thead><tr><th data-field="facility">Smelter</th><th data-field="grade">Status</th><th class="num">Lead capacity, t/yr</th><th class="num">Reported output, t</th></tr></thead>
+              <tbody data-draw="plist" data-iso="IND"></tbody>
+            </table></div>
+            <p class="lm-note">Choose a smelter for its details. Lead capacity is the most a plant could make in a year; of the large groups, only Ardee and Pondy report lead output. The catalogue holds India's large plants only; the CPCB registry of registered units is still to be added.</p>
+          </section>
+
+          <section class="lm-sec" id="india-unaccounted">
+            <h3>Lead unaccounted for, FY2024–25</h3>
+            <div data-case="IND-2024:unaccounted">
+              <p class="lm-big"><span data-draw="v" data-source="balance" data-field="unaccounted_kt" data-where="key=IND-2024" data-fmt="kt">—</span> kt</p>
+              <p><span data-draw="v" data-source="balance" data-field="share_pct" data-where="key=IND-2024">—</span>% of the <b data-draw="v" data-source="balance" data-field="supply_kt" data-where="key=IND-2024" data-fmt="kt">—</b> kt of lead available for recycling did not reach registered recyclers (range <span data-draw="v" data-source="balance" data-field="share_low_pct" data-where="key=IND-2024">—</span>–<span data-draw="v" data-source="balance" data-field="share_high_pct" data-where="key=IND-2024">—</span>%). If imported batteries and scrap all reach registered plants, that is <b data-draw="v" data-source="balance" data-field="share_own_pct" data-where="key=IND-2024">—</b>% of the lead in India's own used batteries (range <span data-draw="v" data-source="balance" data-field="share_own_low_pct" data-where="key=IND-2024">—</span>–<span data-draw="v" data-source="balance" data-field="share_own_high_pct" data-where="key=IND-2024">—</span>%).</p>
+            </div>
+            <div data-case="IND-2024:gap" hidden>
+              <p class="lm-big">None</p>
+              <p>Registered recyclers took in about <b data-draw="v" data-source="balance" data-field="excess_pct" data-where="key=IND-2024">—</b>% more lead than the balance finds available.</p>
+            </div>
+            <div class="lm-chart" id="india-chart" data-draw="bal" data-bal="IND-2024" data-source="balance"></div>
+            <p class="lm-note">Cross-check: Frost &amp; Sullivan put the unorganised sector at <b data-draw="v" data-source="inputs" data-field="central_pct" data-where="id=ind_unorganised_share">—</b>% of India's recycled-lead-ingot market in FY2024–25, and India's own lead scrap at <span data-draw="v" data-source="inputs" data-field="low_kt" data-where="id=ind_scrap_generation">—</span>–<span data-draw="v" data-source="inputs" data-field="high_kt" data-where="id=ind_scrap_generation">—</span> kt a year, against <span data-draw="v" data-source="balance" data-field="own_kt" data-where="key=IND-2024" data-fmt="kt">—</span> kt of lead in own used batteries here.</p>
+          </section>
+
+          <details class="lm-sec lm-more" id="india-figures">
+            <summary>Balance and trade figures</summary>
+            <h4>Balance, thousand tonnes of lead</h4>
+            <div class="lm-table-wrap"><table class="lm-table" id="india-balance">
+              <thead><tr><th>FY2024–25</th><th class="num">Central</th><th class="num">Low</th><th class="num">High</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Lead in India's own used batteries</th><td class="num" data-draw="v" data-source="balance" data-field="own_kt" data-where="key=IND-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="own_low_kt" data-where="key=IND-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="own_high_kt" data-where="key=IND-2024" data-fmt="kt"></td></tr>
+                <tr><th scope="row">Spent batteries imported, net</th><td class="num" data-draw="v" data-source="balance" data-field="spent_kt" data-where="key=IND-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="spent_low_kt" data-where="key=IND-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="spent_high_kt" data-where="key=IND-2024" data-fmt="kt"></td></tr>
+                <tr><th scope="row">Lead scrap imported, net</th><td class="num" data-draw="v" data-source="balance" data-field="scrap_kt" data-where="key=IND-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="scrap_low_kt" data-where="key=IND-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="scrap_high_kt" data-where="key=IND-2024" data-fmt="kt"></td></tr>
+                <tr class="lm-sum"><th scope="row">Available for recycling</th><td class="num" data-draw="v" data-source="balance" data-field="supply_kt" data-where="key=IND-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="supply_low_kt" data-where="key=IND-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="supply_high_kt" data-where="key=IND-2024" data-fmt="kt"></td></tr>
+                <tr><th scope="row">Registered recyclers' lead output</th><td class="num" data-draw="v" data-source="balance" data-field="smelter_output_kt" data-where="key=IND-2024" data-fmt="kt"></td><td></td><td></td></tr>
+                <tr><th scope="row">Fed to registered recyclers (output ÷ recovery)</th><td class="num" data-draw="v" data-source="balance" data-field="intake_kt" data-where="key=IND-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="intake_low_kt" data-where="key=IND-2024" data-fmt="kt"></td><td class="num" data-draw="v" data-source="balance" data-field="intake_high_kt" data-where="key=IND-2024" data-fmt="kt"></td></tr>
+                <tr class="lm-sum"><th scope="row">Unaccounted</th><td class="num" data-draw="v" data-source="balance" data-field="unaccounted_kt" data-where="key=IND-2024" data-fmt="kt"></td><td></td><td></td></tr>
+              </tbody>
+            </table></div>
+            <p class="lm-note">Low and high are the low and high case of each line; the range of the result pairs the lowest supply with the highest intake, and the reverse.</p>
+            <h4>Trade, tonnes</h4>
+            <div class="lm-table-wrap"><table class="lm-table" id="india-trade">
+              <thead><tr><th>Product</th><th class="num">Imports 2023</th><th class="num">Imports 2024</th><th class="num">Exports 2023</th><th class="num">Exports 2024</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Refined and unwrought lead (HS 7801)</th><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=IND-7801-Imports-2023" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=IND-7801-Imports-2024" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=IND-7801-Exports-2023" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=IND-7801-Exports-2024" data-fmt="t" data-link="url"></td></tr>
+                <tr><th scope="row">Spent lead-acid batteries (HS 8549.11)</th><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=IND-spent-Imports-2023" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=IND-spent-Imports-2024" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=IND-spent-Exports-2023" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=IND-spent-Exports-2024" data-fmt="t" data-link="url"></td></tr>
+                <tr><th scope="row">Lead waste and scrap (HS 7802)</th><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=IND-7802-Imports-2023" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=IND-7802-Imports-2024" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=IND-7802-Exports-2023" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=IND-7802-Exports-2024" data-fmt="t" data-link="url"></td></tr>
+                <tr><th scope="row">New lead-acid batteries (HS 8507.10, 8507.20)</th><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=IND-8507-Imports-2023" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=IND-8507-Imports-2024" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=IND-8507-Exports-2023" data-fmt="t" data-link="url"></td><td class="num" data-draw="v" data-source="trade" data-field="tonnes" data-where="key=IND-8507-Exports-2024" data-fmt="t" data-link="url"></td></tr>
+              </tbody>
+            </table></div>
+            <p class="lm-note">As reported by India, except refined lead exports in 2024, where India reported only a value and the weight is the sum of partners' reported imports from India. UN Comtrade estimated India's weights for refined lead exports in 2023, refined lead imports in 2024 and all new-battery trade.</p>
+            <h4>What the balance rests on</h4>
+            <ul class="lm-notes">
+              <li>Lead in India's own used batteries is the battery share of India's refined lead consumption three years earlier, less the lead in that year's net exports of new batteries.</li>
+              <li>Registered intake is registered recyclers' share of India's recycled lead output (Frost &amp; Sullivan), divided by recovery. For registered intake, the low case takes Autocar Pro's unsourced estimate of the informal share; the high case takes the environment ministry's figure for battery waste recycled through registered recyclers since August 2022, spread over the months since.</li>
+              <li>If registered plants also re-refine imported unwrought lead, their output overstates what they take from batteries and scrap, and the unaccounted share is higher than shown.</li>
+              <li>The official recycling figure covers all battery types and may include imported batteries, so it serves only as the high case for registered intake.</li>
+            </ul>
+          </details>
+        </div>
+
+        <div data-for="other" id="country" hidden>
+          <div class="lm-ph">
+            <div>
+              <h2 id="country-title"><span data-draw="cf" data-f="country">—</span></h2>
+              <p class="lm-note" data-hasnot="balance_key">The lead balance for this country is not built yet; its production, smelters and trade are below.</p>
+              <p class="lm-note" data-has="balance_key"><span data-draw="cf" data-f="balance_method">—</span></p>
+            </div>
+            <button type="button" class="lm-btn" data-clear aria-label="Close the country">×</button>
+          </div>
+
+          <section class="lm-sec" id="country-production">
+            <h3>Secondary lead production</h3>
+            <p class="lm-big" data-has="production_kt"><span data-draw="cf" data-f="production_kt">—</span> kt</p>
+            <p class="lm-big" data-hasnot="production_kt">No figure</p>
+            <p class="lm-note"><span data-draw="cf" data-f="production_note">—</span> Source: <span data-draw="cf" data-f="production_source">—</span>.<span data-has="exports_kt"> Refined lead exported in <span data-draw="cf" data-f="trade_year">—</span>: <span data-draw="cf" data-f="exports_kt">—</span> kt.</span></p>
+          </section>
+
+          <section class="lm-sec" id="country-smelters">
+            <h3>Smelters</h3>
+            <div class="lm-seg" role="group" aria-label="Which smelters to list">
+              <button type="button" data-list="confirmed" aria-pressed="false">Confirmed</button>
+              <button type="button" data-list="probable_plus" aria-pressed="true">Confirmed and probable</button>
+              <button type="button" data-list="closed" aria-pressed="false">Closed</button>
+              <button type="button" data-list="all" aria-pressed="false">All</button>
+            </div>
+            <p class="lm-count"><span>Smelters <b data-draw="cc" data-f="smelters">—</b></span><span>Lead capacity <b data-draw="cc" data-f="capacity_tpy">—</b> t/yr</span><span>Capacity known for <b data-draw="cc" data-f="with_capacity">—</b></span></p>
+            <div class="lm-table-wrap"><table class="lm-table lm-list" id="country-smelter-list" data-source="smelters" data-row-key="id">
+              <thead><tr><th data-field="facility">Smelter</th><th data-field="grade">Status</th><th class="num">Lead capacity, t/yr</th><th class="num">Reported output, t</th></tr></thead>
+              <tbody data-draw="plist" data-iso="sel"></tbody>
+            </table></div>
+            <p class="lm-note">Choose a smelter for its details. Lead capacity is the catalogue's lead output figure or, where it gives only battery capacity, that capacity × 0.6.</p>
+          </section>
+
+          <section class="lm-sec" id="country-trade">
+            <h3>Lead trade, <span data-draw="cf" data-f="trade_year">—</span></h3>
+            <p>Lead content: <b data-draw="cf" data-f="lead_in_kt">—</b> kt in and <b data-draw="cf" data-f="lead_out_kt">—</b> kt out, counting <span data-draw="v" data-source="inputs" data-field="central" data-where="id=lead_fraction">—</span> t of lead per t of battery and <span data-draw="v" data-source="inputs" data-field="central" data-where="id=scrap_fraction">—</span> per t of scrap; figures not reported count as zero.</p>
+            <div class="lm-table-wrap"><table class="lm-table" id="country-trade-table">
+              <thead><tr><th>Tonnes</th><th class="num">Imports</th><th class="num">Exports</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Refined and unwrought lead (HS 7801)</th><td class="num" data-draw="ct" data-p="7801" data-flow="Imports"></td><td class="num" data-draw="ct" data-p="7801" data-flow="Exports"></td></tr>
+                <tr><th scope="row">Spent batteries (HS 8549.11; 8548.10 in older reports)</th><td class="num" data-draw="ct" data-p="spent" data-flow="Imports"></td><td class="num" data-draw="ct" data-p="spent" data-flow="Exports"></td></tr>
+                <tr><th scope="row">Lead waste and scrap (HS 7802)</th><td class="num" data-draw="ct" data-p="7802" data-flow="Imports"></td><td class="num" data-draw="ct" data-p="7802" data-flow="Exports"></td></tr>
+                <tr><th scope="row">New lead-acid batteries (HS 8507.10, 8507.20)</th><td class="num" data-draw="ct" data-p="8507" data-flow="Imports"></td><td class="num" data-draw="ct" data-p="8507" data-flow="Exports"></td></tr>
+              </tbody>
+            </table></div>
+            <p class="lm-note"><span data-draw="cf" data-f="trade_note">—</span> Each figure links to its source.</p>
+          </section>
+
+          <section class="lm-sec" id="country-check">
+            <h3>What the trade figures suggest</h3>
+            <p data-draw="cf" data-f="comparison">—</p>
+            <p class="lm-note">From the catalogue's trade check, which sets exports and used-battery trade against catalogued capacity.</p>
+          </section>
+
+          <section class="lm-sec" id="country-unaccounted">
+            <h3>Lead unaccounted for<span data-has="balance_key">, <span data-draw="cb" data-f="period">—</span></span></h3>
+            <div data-hasnot="balance_key">
+              <p class="lm-big">Not estimated</p>
+              <p data-draw="cf" data-f="balance_note">—</p>
+            </div>
+            <div data-has="balance_key">
+              <div data-selcase="gap" hidden>
+                <p class="lm-big">None</p>
+                <p>Lead going out of <span data-draw="cf" data-f="country">—</span>, <b data-draw="cb" data-f="outflow_kt" data-fmt="kt">—</b> kt, is <span data-draw="cb" data-f="over_phrase">—</span> the <b data-draw="cb" data-f="inflow_kt" data-fmt="kt">—</b> kt recorded coming in through its own used batteries and imports (<span data-draw="cb" data-f="over_range">—</span>). The other <b data-draw="cb" data-f="unrecorded_kt" data-fmt="kt">—</b> kt must come from sources missing from the records.</p>
+              </div>
+              <div data-selcase="unaccounted" hidden>
+                <p class="lm-big"><span data-draw="cb" data-f="unaccounted_kt" data-fmt="kt">—</span> kt</p>
+                <p><b data-draw="cb" data-f="share_pct">—</b>% of the lead left for recycling at home (range <span data-draw="cb" data-f="share_low_pct">—</span>–<span data-draw="cb" data-f="share_high_pct">—</span>%). Of the <b data-draw="cb" data-f="inflow_kt" data-fmt="kt">—</b> kt in its own used batteries and imports, <b data-draw="cb" data-f="exported_kt" data-fmt="kt">—</b> kt left the country in used batteries and scrap and <b data-draw="cb" data-f="intake_kt" data-fmt="kt">—</b> kt was fed to smelters.</p>
+              </div>
+              <div class="lm-chart" id="country-chart" data-draw="balio" data-source="balance"></div>
+              <details class="lm-more" id="country-figures">
+                <summary>Balance figures and what they rest on</summary>
+                <h4>Thousand tonnes of lead</h4>
+                <div class="lm-table-wrap"><table class="lm-table" id="country-balance">
+                  <thead><tr><th><span data-draw="cb" data-f="period">—</span></th><th class="num">Central</th><th class="num">Low</th><th class="num">High</th></tr></thead>
+                  <tbody>
+                    <tr><th scope="row">Lead in own used batteries</th><td class="num" data-draw="cb" data-f="own_kt" data-fmt="kt"></td><td class="num" data-draw="cb" data-f="own_low_kt" data-fmt="kt"></td><td class="num" data-draw="cb" data-f="own_high_kt" data-fmt="kt"></td></tr>
+                    <tr><th scope="row">Spent batteries imported</th><td class="num" data-draw="cb" data-f="spent_in_kt" data-fmt="kt"></td><td class="num" data-draw="cb" data-f="spent_in_low_kt" data-fmt="kt"></td><td class="num" data-draw="cb" data-f="spent_in_high_kt" data-fmt="kt"></td></tr>
+                    <tr><th scope="row">Lead scrap imported</th><td class="num" data-draw="cb" data-f="scrap_in_kt" data-fmt="kt"></td><td class="num" data-draw="cb" data-f="scrap_in_low_kt" data-fmt="kt"></td><td class="num" data-draw="cb" data-f="scrap_in_high_kt" data-fmt="kt"></td></tr>
+                    <tr class="lm-sum"><th scope="row">Coming in</th><td class="num" data-draw="cb" data-f="inflow_kt" data-fmt="kt"></td><td class="num" data-draw="cb" data-f="inflow_low_kt" data-fmt="kt"></td><td class="num" data-draw="cb" data-f="inflow_high_kt" data-fmt="kt"></td></tr>
+                    <tr><th scope="row">Fed to smelters (<span data-draw="cb" data-f="intake_basis">refined lead exports ÷ recovery</span>)</th><td class="num" data-draw="cb" data-f="intake_kt" data-fmt="kt"></td><td class="num" data-draw="cb" data-f="intake_low_kt" data-fmt="kt"></td><td class="num" data-draw="cb" data-f="intake_high_kt" data-fmt="kt"></td></tr>
+                    <tr><th scope="row">Spent batteries exported</th><td class="num" data-draw="cb" data-f="spent_out_kt" data-fmt="kt"></td><td class="num" data-draw="cb" data-f="spent_out_low_kt" data-fmt="kt"></td><td class="num" data-draw="cb" data-f="spent_out_high_kt" data-fmt="kt"></td></tr>
+                    <tr><th scope="row">Lead scrap exported</th><td class="num" data-draw="cb" data-f="scrap_out_kt" data-fmt="kt"></td><td class="num" data-draw="cb" data-f="scrap_out_low_kt" data-fmt="kt"></td><td class="num" data-draw="cb" data-f="scrap_out_high_kt" data-fmt="kt"></td></tr>
+                    <tr class="lm-sum"><th scope="row">Going out</th><td class="num" data-draw="cb" data-f="outflow_kt" data-fmt="kt"></td><td class="num" data-draw="cb" data-f="outflow_low_kt" data-fmt="kt"></td><td class="num" data-draw="cb" data-f="outflow_high_kt" data-fmt="kt"></td></tr>
+                    <tr class="lm-sum"><th scope="row">Coming in minus going out</th><td class="num" data-draw="cb" data-f="unaccounted_kt" data-fmt="kt"></td><td></td><td></td></tr>
+                  </tbody>
+                </table></div>
+                <p class="lm-note">Low and high are the low and high case of each line. The share left unaccounted is of the lead coming in less what was exported; its range pairs the lowest supply with the highest smelter feed, and the reverse.</p>
+                <h4>What the balance rests on</h4>
+                <ul class="lm-notes" data-draw="cl" data-f="balance_notes"></ul>
+              </details>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div data-panel="smelter" id="panel-smelter" hidden>
+        <div class="lm-ph">
+          <button type="button" class="lm-btn" data-back>← Back to the country</button>
+          <button type="button" class="lm-btn" data-clear aria-label="Close">×</button>
+        </div>
+        <h2 id="smelter-name" class="lm-sec"><span data-draw="smf" data-f="facility">—</span></h2>
+        <p class="lm-note"><span data-draw="smf" data-f="where">—</span></p>
+        <p><span data-draw="smf" data-f="grade">—</span></p>
+        <div class="lm-tiles" id="smelter-figures">
+          <div class="lm-tile"><p class="lm-tile-l">Lead capacity, t/yr</p><p class="lm-tile-v" data-draw="smf" data-f="lead_capacity_tpy">—</p></div>
+          <div class="lm-tile"><p class="lm-tile-l">Reported lead output, t</p><p class="lm-tile-v" data-draw="smf" data-f="reported_output_t">—</p></div>
+          <div class="lm-tile"><p class="lm-tile-l">Battery capacity, t/yr</p><p class="lm-tile-v" data-draw="smf" data-f="battery_capacity_tpy">—</p></div>
+          <div class="lm-tile"><p class="lm-tile-l">Batteries processed, t/yr</p><p class="lm-tile-v" data-draw="smf" data-f="battery_throughput_tpy">—</p></div>
+        </div>
+        <div class="lm-plume" id="smelter-plume" data-draw="smf" data-f="plume"></div>
+        <dl class="lm-dl" id="smelter-details">
+          <div class="lm-kv" data-fwrap="status_summary"><dt>Status</dt><dd data-draw="smf" data-f="status_summary">—</dd></div>
+          <div class="lm-kv" data-fwrap="reported_output_note"><dt>Output</dt><dd data-draw="smf" data-f="reported_output_note">—</dd></div>
+          <div class="lm-kv" data-fwrap="facility_type"><dt>Facility type</dt><dd data-draw="smf" data-f="facility_type">—</dd></div>
+          <div class="lm-kv" data-fwrap="regulatory"><dt>Permits and oversight</dt><dd data-draw="smf" data-f="regulatory">—</dd></div>
+          <div class="lm-kv" data-fwrap="capacity_reported"><dt>Capacity as reported</dt><dd data-draw="smf" data-f="capacity_reported">—</dd></div>
+          <div class="lm-kv" data-fwrap="capacity_notes"><dt>Capacity notes</dt><dd data-draw="smf" data-f="capacity_notes">—</dd></div>
+          <div class="lm-kv" data-fwrap="site"><dt>Site</dt><dd data-draw="smf" data-f="site">—</dd></div>
+          <div class="lm-kv"><dt>Map position</dt><dd data-draw="smf" data-f="coords">—</dd></div>
+          <div class="lm-kv" data-fwrap="process_notes"><dt>Process</dt><dd data-draw="smf" data-f="process_notes">—</dd></div>
+          <div class="lm-kv" data-fwrap="related"><dt>Related</dt><dd data-draw="smf" data-f="related">—</dd></div>
+          <div class="lm-kv" data-fwrap="sources"><dt>Sources</dt><dd data-draw="smf" data-f="sources">—</dd></div>
+          <div class="lm-kv" data-fwrap="next_step"><dt>Next research step</dt><dd data-draw="smf" data-f="next_step">—</dd></div>
+        </dl>
+        <p class="lm-note">From the smelter catalogue. The catalogue converts between battery and lead tonnes at 0.6 t of lead per t of battery; the capacity notes say which figure the plant reported.</p>
+      </div>
+    </aside>
+  </div>
+
+  <section class="lm-card lm-method" id="method">
+    <details>
+      <summary>How the balance works, and its sources</summary>
+      <p>For each country and year: lead available for recycling = lead in the country's own used batteries + lead in net imports of spent batteries + lead in net imports of lead scrap. Lead fed to industrial or registered smelters = their lead output ÷ recovery. The share unaccounted is what is left, as a share of the lead available. Where smelters need more lead than recorded sources supply, nothing is left unaccounted and the gap is unrecorded feed. Recycled and primary lead cannot be told apart in trade data, and lead used at home is not traded.</p>
+      <p>Indonesia's balance is provisional: the lead in its own used batteries is Brian Wilson's 2021 estimate for Pure Earth, built from vehicles and batteries in use around 2020 and their service lives, and smelter feed is secondary lead output ÷ recovery, with USGS's 2022 estimate in the central case, 2024 refined lead exports as the low case and the formal sector's capacity, run full, as the high case.</p>
+      <p>Nigeria, DR Congo and Ethiopia use Ghana's method: they make no batteries at home (assumed), so the lead in their own used batteries is the lead in the new batteries they imported two to four years earlier, net of exports, and smelter output is refined lead exports. Their panels set all the lead coming in (own used batteries and imports) against all the lead going out (smelter feed and exports of used batteries and scrap). In all five balances, spent-battery trade is the country's own report plus shipments that only its partners recorded, from UNCTAD's partner data; Ethiopia's exports use UNCTAD's estimate in place of a reported weight that is implausible for its value.</p>
+      <p>Smelters are graded by the catalogue: A (field-confirmed) and B (active on two or more signals) count as confirmed; C is probably active; D is listed or stale; P is planned; X is closed or raided. Lead capacity is the catalogue's lead output figure for a plant or, where it gives only battery capacity, that capacity × 0.6; reported output is shown only where a company has published it.</p>
+      <p>Trade-flow lines take each partner flow from the chosen country's own report where it gave a weight, and otherwise from the partner's report (dashed), using UNCTAD's partner data for spent lead-acid batteries (HS 8549.11) and new lead-acid batteries (HS 8507.10, 8507.20). Refined lead and scrap are not yet drawn by partner.</p>
+      <p>For the 11 countries without a balance, secondary lead production is USGS's figure for 2022, and trade is each country's latest reported year (2024, or 2023 where 2024 is missing), from UN Comtrade and UNCTAD's battery trade monitor; partners' reports fill in where a country did not report.</p>
+      <h3>Parameters and country figures</h3>
+      <div class="lm-table-wrap"><table class="lm-table" id="parameters" data-source="inputs" data-row-key="id">
+        <thead><tr><th data-field="label">Input</th><th data-field="scope">Applies to</th><th class="num" data-field="low">Low</th><th class="num" data-field="central">Central</th><th class="num" data-field="high">High</th><th data-field="unit">Unit</th><th data-field="basis">Basis and source</th></tr></thead>
+        <tbody data-draw="params"></tbody>
+      </table></div>
+      <h3>Sources</h3>
+      <ul class="lm-src">
+        <li><a href="https://comtradeapi.un.org/public/v1/preview/C/A/HS?reporterCode=288&amp;period=2024&amp;cmdCode=7801&amp;partnerCode=0" target="_blank" rel="noopener">UN Comtrade public API</a>: refined lead (HS 7801) and lead scrap (HS 7802); each figure in the trade tables links to its own query.</li>
+        <li><a href="https://unctad-ted.github.io/global-battery-trade-monitor/#p=SPENT_11&amp;y=2024&amp;m=weight&amp;v=map&amp;s=GLOBAL&amp;c=GHA" target="_blank" rel="noopener">UNCTAD Global Battery Trade Monitor</a>: spent and new lead-acid batteries, national totals and partner flows (UN Comtrade; UNCTAD calculations; extracted 3 Nov 2026; 2024 provisional).</li>
+        <li><a href="https://nsearchives.nseindia.com/corporate/Registration_29092025064558_Ardee_Industries_Limited.pdf" target="_blank" rel="noopener">Ardee Industries draft red herring prospectus, Sept 2025</a>: Frost &amp; Sullivan industry report, pp. 142–152 (India's recycled lead output, market shares, scrap generation); Ardee's own production, p. 204.</li>
+        <li><a href="https://nsearchives.nseindia.com/corporate/POCL_02062026174314_TranscriptOfQ4EarningsCallSD.pdf" target="_blank" rel="noopener">Pondy Oxides and Chemicals, Q4 FY2025–26 earnings call, June 2026</a>: lead output of the company's plants.</li>
+        <li><a href="https://integratedreport.hzlindia.com/annual-integrated-report-fy-2022-23/lead.php" target="_blank" rel="noopener">Hindustan Zinc integrated report FY2022–23</a>: India's refined lead consumption.</li>
+        <li><a href="https://www.eqmagpro.com/parliament-question-circular-economy-of-batteries-eq/" target="_blank" rel="noopener">EQ Mag, 19 Dec 2025</a>: environment ministry reply in the Rajya Sabha on battery waste recycled.</li>
+        <li><a href="https://www.autocarpro.in/news/ardee-industries-eyes-brownfield-expansion-as-capacity-utilization-nears-trigger-point-133925" target="_blank" rel="noopener">Autocar Pro, 4 Aug 2026</a>: estimate of India's informal share.</li>
+        <li><a href="https://mingo.gov.hr/UserDocsImages/UPRAVA-ZA-PROCJENU-UTJECAJA-NA-OKOLIS-ODRZIVO-GOSPODARENJE-OTPADOM/Sektor%20za%20odr%C5%BEivo%20gospodarenje%20otpadom/UNEP-CHW-WAST-GUID-WasteLeadAcidBatteries.English.pdf" target="_blank" rel="noopener">Basel Convention technical guidelines on waste lead-acid batteries, 2003</a>: battery composition and service life.</li>
+        <li><a href="https://tnpcb.gov.in/pdf_2024/EPR_Certificate_generation.pdf" target="_blank" rel="noopener">Mechanism for generation of EPR certificates (TNPCB copy)</a>: lead content and conversion factor in India's EPR scheme.</li>
+        <li><a href="https://www.indexmundi.com/en/commodities/minerals/lead/lead_t14.html" target="_blank" rel="noopener">USGS Minerals Yearbook 2022, lead, table 14 (reproduced by IndexMundi)</a>: refinery production of secondary lead by country, 2018–2022.</li>
+        <li>Secondary lead smelter catalogue (Pure Earth, not public): smelter locations, status, capacity and each plant's own sources.</li>
+        <li>Brian Wilson, lead-acid battery and used-battery inventory and trade analyses: Indonesia (prepared by the ILA for Pure Earth, Mar 2021), Bangladesh (ILA for UNEP, Mar 2020) and Argentina (Nov 2021); Indonesia's used batteries and formal capacity, and the notes for Bangladesh and Argentina. Copies on file with Pure Earth.</li>
+        <li><a href="https://en.bonikbarta.com/bangladesh/Lhv57slcn0748lpc/" target="_blank" rel="noopener">Bonik Barta, 14 Aug 2026</a> and <a href="https://today.thefinancialexpress.com.bd/print/tougher-policy-soon-to-regulate-battery-run-rickshaws-1754677365" target="_blank" rel="noopener">The Financial Express, 9 Aug 2025</a>: battery-run rickshaws and easy-bikes in Bangladesh (BPDB, CPD and BRTA estimates).</li>
+        <li>Country outlines: Natural Earth 1:110m, 1:50m for the catalogue countries (world-atlas package).</li>
+      </ul>
+    </details>
+  </section>
+</div>
+<p class="site-foot">From Pure Earth. Smelters from Pure Earth's secondary lead smelter catalogue as of 16 Nov 2026; trade from UN Comtrade and UNCTAD's Global Battery Trade Monitor. Each figure's sources are in the panels and under "How the balance works, and its sources". "Predict plume" opens <a href="https://ulabplume.org/" target="_blank" rel="noopener">ULAB Plume</a>, Pure Earth's screening tool for lead dispersion from battery recycling plants.</p>
+<script src="config.js?v=90f490ed4f"></script>
+<script src="vendor/d3.min.js?v=7.9.2"></script>
+<script src="dash.js?v=90f490ed4f"></script>
+<script src="calcs.js?v=90f490ed4f"></script>
+<script src="app.js?v=90f490ed4f"></script>
+</body>
+</html>

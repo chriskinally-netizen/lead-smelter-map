@@ -1,0 +1,3 @@
+*.before-*
+*.bak
+.DS_Store
