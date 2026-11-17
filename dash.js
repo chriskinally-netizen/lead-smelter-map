@@ -3,7 +3,7 @@
 (function () {
   'use strict';
   var NAMES = ['trade', 'inputs', 'smelters', 'countries', 'flows', 'world'];
-  var VERSION = 'ce79fea367';
+  var VERSION = 'f203a3c3ee';
   var DATA = {}, calcs = {}, draws = {}, made = new Map(), od = [], memo = {}, state = 'loading';
   var dash = {
     colors: ['var(--c0)', 'var(--c1)', 'var(--c2)', 'var(--c3)'],
