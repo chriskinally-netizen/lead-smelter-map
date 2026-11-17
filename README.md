@@ -37,7 +37,7 @@ On a smelter's panel, **Predict plume in ULAB Plume** opens ULAB Plume in a new 
 
 Smelters without a position in the catalogue show the button greyed out.
 
-The button points at ULAB Plume's beta site (`https://ulabplume-beta.netlify.app/`), which reads these links first. When that change reaches production, edit `config.js` so it reads `https://ulabplume.org/` and push.
+The button opens ULAB Plume itself (`https://ulabplume.org/`), which reads these links since 16 Nov 2026. To try a change to how they are read before it is released, point `config.js` at ULAB Plume's beta site (`https://ulabplume-beta.netlify.app/`) and push.
 
 ## Updating the data
 
