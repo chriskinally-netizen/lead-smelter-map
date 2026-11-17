@@ -31,7 +31,7 @@ To try it on your own computer, run `python3 -m http.server 8000` in this folder
 On a smelter's panel, **Predict plume in ULAB Plume** opens ULAB Plume in a new tab with:
 
 - `site_lat`, `site_lon`: the catalogue's map position. Unless the catalogue's location precision is *Compound*, this is a town or area point, and the note under the button says to move the pin onto the plant before a final run.
-- `lead_produced_tpy`: the plant's reported lead output, only where a company publishes one for that plant. Company totals and capacities are never sent as output.
+- `lead_produced_tpy`: the plant's reported lead output, only where a figure for that plant is published: by the company, or (in India) in the plant's lead-scrap import application to the environment ministry's expert committee (MoEFCC). Company totals and capacities are never sent as output.
 - `lead_capacity_tpy`: the catalogue's lead capacity, shown in ULAB Plume as a hint only.
 - `site_name`, `site_ref` (catalogue ID), `site_precision` and `from=lmic-smelter-map`, for ULAB Plume's notice.
 

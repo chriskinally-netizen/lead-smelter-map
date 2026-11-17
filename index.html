@@ -6,7 +6,7 @@
 <title>Lead balance and secondary lead smelters, low- and middle-income countries</title>
 <meta name="description" content="Map of secondary lead smelters in low- and middle-income countries, with lead balances built from trade data, and a link to model a smelter's plume in ULAB Plume.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="styles.css?v=f203a3c3ee">
+<link rel="stylesheet" href="styles.css?v=e2a2a2b96b">
 </head>
 <body>
 <p class="site-msg" id="site-load-error" hidden>The data did not load. Reload the page; if it keeps happening, the site may be updating.</p>
@@ -14,7 +14,7 @@
 <div class="lm">
   <header id="summary">
     <h1 class="lm-title">Lead balance and secondary smelters</h1>
-    <p class="lm-sub">Unaccounted lead is the lead in used batteries and scrap that industrial or registered smelters did not take in; here it is assumed to be recycled informally or by unregistered plants. Trade from UN Comtrade (2019–2024); smelters from the smelter catalogue as of 16 Nov 2026. Balances are built for Ghana, India, Nigeria, DR Congo and Ethiopia, with a provisional one for Indonesia; the catalogue's other 11 countries show their smelters, production and trade.</p>
+    <p class="lm-sub">Unaccounted lead is the lead in used batteries and scrap that industrial or registered smelters did not take in; here it is assumed to be recycled informally or by unregistered plants. Trade from UN Comtrade (2019–2024); smelters from the smelter catalogue as of 17 Nov 2026. Balances are built for Ghana, India, Nigeria, DR Congo and Ethiopia, with a provisional one for Indonesia; the catalogue's other 11 countries show their smelters, production and trade.</p>
   </header>
 
   <div class="lm-layout">
@@ -284,7 +284,7 @@
               <thead><tr><th data-field="facility">Smelter</th><th data-field="grade">Status</th><th class="num">Lead capacity, t/yr</th><th class="num">Reported output, t</th></tr></thead>
               <tbody data-draw="plist" data-iso="IND"></tbody>
             </table></div>
-            <p class="lm-note">Choose a smelter for its details. Lead capacity is the most a plant could make in a year; of the large groups, only Ardee and Pondy report lead output. The catalogue holds India's large plants only; the CPCB registry of registered units is still to be added.</p>
+            <p class="lm-note">Choose a smelter for its details. Lead capacity is the most a plant could make in a year. Reported output comes from Ardee's prospectus, Pondy's earnings call and the production figures plants gave in lead-scrap import applications to the environment ministry's expert committee (MoEFCC). Besides the large groups, the catalogue holds the units on the Maharashtra, Punjab, Himachal Pradesh and Tamil Nadu pollution control board lists and the committee's applicants; the CPCB registry of registered units is still to be added.</p>
           </section>
 
           <section class="lm-sec" id="india-unaccounted">
@@ -474,7 +474,7 @@
       <p>For each country and year: lead available for recycling = lead in the country's own used batteries + lead in net imports of spent batteries + lead in net imports of lead scrap. Lead fed to industrial or registered smelters = their lead output ÷ recovery. The share unaccounted is what is left, as a share of the lead available. Where smelters need more lead than recorded sources supply, nothing is left unaccounted and the gap is unrecorded feed. Recycled and primary lead cannot be told apart in trade data, and lead used at home is not traded.</p>
       <p>Indonesia's balance is provisional: the lead in its own used batteries is Brian Wilson's 2021 estimate for Pure Earth, built from vehicles and batteries in use around 2020 and their service lives, and smelter feed is secondary lead output ÷ recovery, with USGS's 2022 estimate in the central case, 2024 refined lead exports as the low case and the formal sector's capacity, run full, as the high case.</p>
       <p>Nigeria, DR Congo and Ethiopia use Ghana's method: they make no batteries at home (assumed), so the lead in their own used batteries is the lead in the new batteries they imported two to four years earlier, net of exports, and smelter output is refined lead exports. Their panels set all the lead coming in (own used batteries and imports) against all the lead going out (smelter feed and exports of used batteries and scrap). In all five balances, spent-battery trade is the country's own report plus shipments that only its partners recorded, from UNCTAD's partner data; Ethiopia's exports use UNCTAD's estimate in place of a reported weight that is implausible for its value.</p>
-      <p>Smelters are graded by the catalogue: A (field-confirmed) and B (active on two or more signals) count as confirmed; C is probably active; D is listed or stale; P is planned; X is closed or raided. Lead capacity is the catalogue's lead output figure for a plant or, where it gives only battery capacity, that capacity × 0.6; reported output is shown only where a company has published it.</p>
+      <p>Smelters are graded by the catalogue: A (field-confirmed) and B (active on two or more signals) count as confirmed; C is probably active; D is listed or stale; P is planned; X is closed or raided. Lead capacity is the catalogue's lead output figure for a plant or, where it gives only battery capacity, that capacity × 0.6; reported output is shown where a company has published it or, in India, where a plant stated it in a lead-scrap import application to the environment ministry's expert committee (MoEFCC).</p>
       <p>Trade-flow lines take each partner flow from the chosen country's own report where it gave a weight, and otherwise from the partner's report (dashed), using UNCTAD's partner data for spent lead-acid batteries (HS 8549.11) and new lead-acid batteries (HS 8507.10, 8507.20). Refined lead and scrap are not yet drawn by partner.</p>
       <p>For the 11 countries without a balance, secondary lead production is USGS's figure for 2022, and trade is each country's latest reported year (2024, or 2023 where 2024 is missing), from UN Comtrade and UNCTAD's battery trade monitor; partners' reports fill in where a country did not report.</p>
       <h3>Parameters and country figures</h3>
@@ -503,10 +503,10 @@
   </section>
 </div>
 <p class="site-foot">From Pure Earth. Smelters from Pure Earth's secondary lead smelter catalogue as of 17 Nov 2026; trade from UN Comtrade and UNCTAD's Global Battery Trade Monitor. Each figure's sources are in the panels and under "How the balance works, and its sources". "Predict plume" opens <a href="https://ulabplume.org/" target="_blank" rel="noopener">ULAB Plume</a>, Pure Earth's screening tool for lead dispersion from battery recycling plants.</p>
-<script src="config.js?v=f203a3c3ee"></script>
+<script src="config.js?v=e2a2a2b96b"></script>
 <script src="vendor/d3.min.js?v=7.9.2"></script>
-<script src="dash.js?v=f203a3c3ee"></script>
-<script src="calcs.js?v=f203a3c3ee"></script>
-<script src="app.js?v=f203a3c3ee"></script>
+<script src="dash.js?v=e2a2a2b96b"></script>
+<script src="calcs.js?v=e2a2a2b96b"></script>
+<script src="app.js?v=e2a2a2b96b"></script>
 </body>
 </html>
